@@ -16,9 +16,9 @@ public class GameProtocol implements Serializable {
     private final LinkedList<Card> currentHand;
     private final HashMap<String, Integer> playerScores;
     private Card winningCard;
-    private String winningPlayerName;
+
     public enum Status{
-        NOT_STARTED, NEW_HAND, HAND_IN_PROGRESS, HAND_OVER, GAME_OVER
+        NEW_HAND, HAND_IN_PROGRESS, HAND_OVER, GAME_OVER
     }
 
     public GameProtocol(LinkedList<Player> players) {
@@ -61,26 +61,13 @@ public class GameProtocol implements Serializable {
                 }
             }else if (gameStatus == Status.HAND_OVER) {
                 String roundResults = roundWinner(roundNumber);
-//                Collections.sort(currentHand);
-//                this.winningCard = currentHand.get(playersList.size() - 1);
-//                System.out.println(winningCard.getCardValue());
-
-//                for (Player player : this.playersList) {
-//                    if (player.hasCard(winningCard)) {
-//
-//                        this.winningPlayerName = player.getName();
-//                        System.out.println(winningPlayerName);
-//                        playerScores.put(player.getName(), playerScores.get(player.getName()) + 1);
-//                    }
-//                }
                 if(playersList.get(0).getHandSize() == 100/playersList.size()){
                     gameStatus = Status.GAME_OVER;
                 }else{
                     gameStatus = Status.NEW_HAND;
-                    return roundResults;
                 }
+                return roundResults;
             }else if (gameStatus == Status.NEW_HAND) {
-                System.out.println("NEW HAND");
                 currentHand.clear();
                 gameStatus = Status.HAND_IN_PROGRESS;
             }else if (gameStatus == Status.GAME_OVER) {
@@ -93,35 +80,25 @@ public class GameProtocol implements Serializable {
     public String roundWinner(int roundNumber){
         StringBuilder handResult = new StringBuilder();
         Player winner = playersList.get(0);
-        for (int i = 0; i < playersList.size() - 1; i++) {
-            if(playersList.get(i).getHand().get(roundNumber - 1).compareTo(playersList.get(i+1).getHand().get(roundNumber - 1))>0){
-                winner = playersList.get(i+1);
-            }
-            handResult.append(getCurrentHand())
-                    .append(playersList.get(i).getName())
-                    .append(" wins the hand with a ")
-                    .append(playersList.get(i).getHand().get(roundNumber - 1).isWildcard() ? "wildcard " : "")
-                    .append(playersList.get(i).getHand().get(roundNumber - 1).getCardValue());
-            System.out.printf("%s plays %s \t \t \t  ", playersList.get(i).getName(), playersList.get(i).getHand().get(roundNumber - 1).toString());
-
-            if(i == playersList.size() - 2){
-                System.out.printf("%s plays %s ", playersList.get(i+1).getName(), playersList.get(i+1).getHand().get(roundNumber - 1).toString());
+        Collections.sort(currentHand);
+        this.winningCard = currentHand.get(playersList.size() - 1);
+        for (Player player : this.playersList) {
+            if (player.hasCard(winningCard)) {
+                winner = player;
+                playerScores.put(player.getName(), playerScores.get(player.getName()) + 1);
             }
         }
-        System.out.printf("\n%s Wins! \n", winner.getName());
+
+        handResult.append("Round ").append(roundNumber).append(" results:\n")
+                .append(getCurrentHand())
+                .append(winner.getName())
+                .append(" wins the hand with a ")
+                .append(winner.getHand().get(roundNumber - 1).isWildcard() ? "wildcard " : "")
+                .append(winner.getHand().get(roundNumber - 1).getCardValue())
+                .append("\n");
+
         return handResult.toString();
     }
-
-
-    public String getWinningPlayerName() {
-        return winningPlayerName;
-    }
-
-
-    public Card getWinningCard() {
-        return winningCard;
-    }
-
 
     public void dealCards() {
         CardDeck cardDeck = new CardDeck();

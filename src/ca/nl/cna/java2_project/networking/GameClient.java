@@ -46,7 +46,7 @@ public class GameClient{
                 if (player.hadCardsRemaining()){
                     if (!cardSent){
                         Card card = player.revealCard();
-                        System.out.printf("%s: %d%s%n", player.getName(), card.getCardValue(), card.isWildcard() ? " - Wildcard" : "");
+                        System.out.printf("You play a %d%s.%n", card.getCardValue(), card.isWildcard() ? " - Wildcard" : "");
                         output.writeObject(card);
                         cardSent = true;
                     }
@@ -55,8 +55,11 @@ public class GameClient{
                         System.out.println(winnerString);
                         player.discardCard();
                         cardSent = false;
-                        System.out.println("HAND OVER");
                     }
+                }else{
+                    System.out.println("GAME OVER\n");
+                    String finalResults = (String) input.readObject();
+                    System.out.println(finalResults);
                 }
             }
 

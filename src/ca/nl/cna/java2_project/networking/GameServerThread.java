@@ -39,22 +39,15 @@ public class GameServerThread extends Thread {
                         (gameProtocol.getGameStatus() == GameProtocol.Status.HAND_IN_PROGRESS && !isCardPlayed)) {
                     Card cardPlayed = (Card) input.readObject();
                     while (cardPlayed != null && !isCardPlayed) {
-                        System.out.println(gameProtocol.getGameStatus());
-                        if (!isCardPlayed) {
-                            player.addCard(cardPlayed);
-                            handResults = gameProtocol.playGame(cardPlayed, player.getName(), roundNumber);
-                            isCardPlayed = true;
-                            output.writeObject(handResults);
-                            roundNumber++;
-                        }
+                        System.out.println("ROUND " + roundNumber);
+                        player.addCard(cardPlayed);
+                        handResults = gameProtocol.playGame(cardPlayed, player.getName(), roundNumber);
+                        isCardPlayed = true;
+                        output.writeObject(handResults);
+                        roundNumber++;
                     }
                 }
                 while (isCardPlayed && gameProtocol.allCardsPlayed()) {
-//                    String handResults = gameProtocol.getCurrentHand() + gameProtocol.getWinningPlayerName() +
-//                            " wins the hand with a " +
-//                            (gameProtocol.getWinningCard().isWildcard() ? "wildcard " : "") +
-//                            gameProtocol.getWinningCard().getCardValue();
-
                     isCardPlayed = false;
                 }
                 if(gameProtocol.isGameOver()){
