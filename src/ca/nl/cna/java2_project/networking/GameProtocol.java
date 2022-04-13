@@ -15,6 +15,7 @@ public class GameProtocol implements Serializable {
     private final LinkedList<Player> playersList;
     private final LinkedList<Card> currentHand;
     private final HashMap<String, Integer> playerScores;
+    private int totalRoundsPlayed;
 
     public enum Status{
         NEW_HAND, HAND_IN_PROGRESS, HAND_OVER, GAME_OVER
@@ -25,6 +26,7 @@ public class GameProtocol implements Serializable {
         this.playersList = players;
         this.currentHand = new LinkedList<>();;
         this.playerScores = new HashMap<>();
+        this.totalRoundsPlayed = players.size();
         dealCards();
     }
 
@@ -46,33 +48,34 @@ public class GameProtocol implements Serializable {
     }
 
 
-    public String playHand(Card playedCard, String playerName, int roundNumber){
+    public void playHand(Card playedCard, String playerName, int roundNumber) {
         while (true) {
             if (gameStatus == Status.HAND_IN_PROGRESS) {
                 if (allCardsPlayed()) {
-                    gameStatus = Status.HAND_OVER;
-                } else if (!currentHand.contains(playedCard)){
+                    break;
+                } else if (!currentHand.contains(playedCard)) {
                     if (playerScores.get(playerName) == null) {
                         this.playerScores.put(playerName, 0);
                     }
                     System.out.println(playedCard.getCardValue());
                     currentHand.add(playedCard);
                 }
-            }else if (gameStatus == Status.HAND_OVER) {
-                String roundResults = roundWinner(roundNumber);
-                if(playersList.get(0).getHandSize() == 100/playersList.size()){
-                    gameStatus = Status.GAME_OVER;
-                }else{
-                    gameStatus = Status.NEW_HAND;
-                }
-                return roundResults;
-            }else if (gameStatus == Status.NEW_HAND) {
+            } else if (gameStatus == Status.NEW_HAND) {
                 currentHand.clear();
                 gameStatus = Status.HAND_IN_PROGRESS;
-            }else if (gameStatus == Status.GAME_OVER) {
-                return "Game over";
             }
         }
+    }
+
+    public String resolveHand(int roundNumber){
+        String roundResults = roundWinner(roundNumber);
+        if(playersList.get(0).getHandSize() == 100/playersList.size()){
+            gameStatus = Status.GAME_OVER;
+        }else{
+            gameStatus = Status.NEW_HAND;
+        }
+        totalRoundsPlayed++;
+        return roundResults;
     }
 
     public String roundWinner(int roundNumber){
@@ -151,7 +154,14 @@ public class GameProtocol implements Serializable {
             currentHand.append(player.getName()).append(" - ").append(player.getTopCardString()).append("\n");
         }
         return currentHand.toString();
+    }
 
+    public boolean nextRoundReady(int playerRound){
+        return totalRoundsPlayed/playersList.size() == playerRound;
+    }
+
+    public void clearCurrentHand(){
+        currentHand.clear();
     }
 
 }

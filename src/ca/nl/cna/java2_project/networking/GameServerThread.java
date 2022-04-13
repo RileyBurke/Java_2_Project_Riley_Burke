@@ -41,14 +41,15 @@ public class GameServerThread extends Thread {
                     while (cardPlayed != null && !isCardPlayed) {
                         System.out.println("ROUND " + roundNumber);
                         player.addCard(cardPlayed);
-                        handResults = gameProtocol.playHand(cardPlayed, player.getName(), roundNumber);
+                        gameProtocol.playHand(cardPlayed, player.getName(), roundNumber);
                         isCardPlayed = true;
-                        output.writeObject(handResults);
-                        roundNumber++;
                     }
                 }
                 while (isCardPlayed && gameProtocol.allCardsPlayed()) {
                     isCardPlayed = false;
+                    handResults = gameProtocol.resolveHand(roundNumber);
+                    output.writeObject(handResults);
+                    roundNumber++;
                 }
                 if(gameProtocol.isGameOver()){
                     break;

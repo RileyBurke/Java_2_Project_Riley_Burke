@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 
 public class GameServer{
     //TODO change to 4 players on completion
-    public static final int NUMBER_PLAYERS = 4;
+    public static final int NUMBER_PLAYERS = 2;
 
     /**
      * Main server loop

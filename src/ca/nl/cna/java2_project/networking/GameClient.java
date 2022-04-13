@@ -43,7 +43,7 @@ public class GameClient{
 
             //hand loop?
             while (true) {
-                if (player.hadCardsRemaining()){
+                if (player.hadCardsRemaining() && !cardSent){
                     if (!cardSent){
                         Card card = player.revealCard();
                         System.out.printf("You play a %d%s.%n", card.getCardValue(), card.isWildcard() ? " - Wildcard" : "");
