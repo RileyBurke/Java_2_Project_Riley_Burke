@@ -15,7 +15,6 @@ public class GameProtocol implements Serializable {
     private final LinkedList<Player> playersList;
     private final LinkedList<Card> currentHand;
     private final HashMap<String, Integer> playerScores;
-    private Card winningCard;
 
     public enum Status{
         NEW_HAND, HAND_IN_PROGRESS, HAND_OVER, GAME_OVER
@@ -47,7 +46,7 @@ public class GameProtocol implements Serializable {
     }
 
 
-    public String playGame(Card playedCard, String playerName, int roundNumber){
+    public String playHand(Card playedCard, String playerName, int roundNumber){
         while (true) {
             if (gameStatus == Status.HAND_IN_PROGRESS) {
                 if (allCardsPlayed()) {
@@ -76,12 +75,11 @@ public class GameProtocol implements Serializable {
         }
     }
 
-
     public String roundWinner(int roundNumber){
         StringBuilder handResult = new StringBuilder();
         Player winner = playersList.get(0);
         Collections.sort(currentHand);
-        this.winningCard = currentHand.get(playersList.size() - 1);
+        Card winningCard = currentHand.get(playersList.size() - 1);
         for (Player player : this.playersList) {
             if (player.hasCard(winningCard)) {
                 winner = player;
