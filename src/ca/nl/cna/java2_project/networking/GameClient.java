@@ -40,10 +40,10 @@ public class GameClient{
 
             boolean cardSent = false;
             String winnerString = "";
+            String playAgain = "y";
 
-            //hand loop?
-            while (true) {
-                if (player.hadCardsRemaining() && !cardSent){
+            do {
+                if (player.hadCardsRemaining()){
                     if (!cardSent){
                         Card card = player.revealCard();
                         System.out.printf("You play a %d%s.%n", card.getCardValue(), card.isWildcard() ? " - Wildcard" : "");
@@ -60,8 +60,10 @@ public class GameClient{
                     System.out.println("GAME OVER\n");
                     String finalResults = (String) input.readObject();
                     System.out.println(finalResults);
+                    System.out.println("Play again (y/n)?: ");
+                    playAgain = br.readLine();
                 }
-            }
+            }while(playAgain.equalsIgnoreCase("y"));
 
             //Wait on some game loop and play your cards as needed
             //Playing a card is sending a card from the Player object to the server via an ObjectOutputStream
@@ -72,9 +74,9 @@ public class GameClient{
             System.err.println("Don't know about host " + hostName);
             System.exit(1);
         } catch (IOException e) {
-        System.err.println("Couldn't get I/O for the connection to " + hostName);
-        e.printStackTrace();
-        System.exit(1);
+            System.err.println("Couldn't get I/O for the connection to " + hostName);
+            e.printStackTrace();
+            System.exit(1);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

@@ -13,13 +13,13 @@ import java.util.regex.Pattern;
 
 public class GameServer{
     //TODO change to 4 players on completion
-    public static final int NUMBER_PLAYERS = 2;
+    public static final int NUMBER_PLAYERS = 4;
 
     /**
      * Main server loop
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         int portNumber = 4401;
         boolean listening = true;
@@ -73,16 +73,15 @@ public class GameServer{
             new GameServerThread(gameProtocol, clientSocketList.get(i), playersList.get(i), outputStreamList.get(i), inputStreamList.get(i)).start();
         }
 
-        //TODO do a while on the game loop
-        System.out.println("Back here again?");
-        while (!gameProtocol.isGameOver()){
+        while (listening){
             if (gameProtocol.getGameStatus() == GameProtocol.Status.GAME_OVER) {
                 System.out.println("game over");
+                for (ObjectOutputStream outputStream: outputStreamList){
+                    outputStream.writeObject(gameProtocol.getGameResults());
+                }
+                break;
             }
         }
-
-        //TODO print the results
-        gameProtocol.printResults();
     }
 
     public static boolean isValidName(String name){

@@ -42,22 +42,32 @@ public class GameServerThread extends Thread {
                         System.out.println("ROUND " + roundNumber);
                         player.addCard(cardPlayed);
                         gameProtocol.playHand(cardPlayed, player.getName(), roundNumber);
+                        handResults = gameProtocol.resolveHand(roundNumber, player.getName());
                         isCardPlayed = true;
+                        output.writeObject(handResults);
+                        roundNumber++;
                     }
+                }
+                while (isCardPlayed && !gameProtocol.allCardsPlayed()){
+                    this.wait();
                 }
                 while (isCardPlayed && gameProtocol.allCardsPlayed()) {
                     isCardPlayed = false;
-                    handResults = gameProtocol.resolveHand(roundNumber);
-                    output.writeObject(handResults);
-                    roundNumber++;
                 }
                 if(gameProtocol.isGameOver()){
-                    break;
-                }
+                        System.out.println("game over");
+                        output.writeObject(gameProtocol.getGameResults());
+                        break;
+                    }
+
+
+
             }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 

@@ -5,10 +5,7 @@ import ca.nl.cna.java2_project.card_game.CardDeck;
 import ca.nl.cna.java2_project.card_game.Player;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 
 public class GameProtocol implements Serializable {
     private Status gameStatus;
@@ -18,7 +15,7 @@ public class GameProtocol implements Serializable {
     private int totalRoundsPlayed;
 
     public enum Status{
-        NEW_HAND, HAND_IN_PROGRESS, HAND_OVER, GAME_OVER
+        NEW_HAND, HAND_IN_PROGRESS, GAME_OVER
     }
 
     public GameProtocol(LinkedList<Player> players) {
@@ -67,8 +64,8 @@ public class GameProtocol implements Serializable {
         }
     }
 
-    public String resolveHand(int roundNumber){
-        String roundResults = roundWinner(roundNumber);
+    public String resolveHand(int roundNumber, String playerName){
+        String roundResults = roundWinner(roundNumber, playerName);
         if(playersList.get(0).getHandSize() == 100/playersList.size()){
             gameStatus = Status.GAME_OVER;
         }else{
@@ -78,7 +75,7 @@ public class GameProtocol implements Serializable {
         return roundResults;
     }
 
-    public String roundWinner(int roundNumber){
+    public String roundWinner(int roundNumber, String playerName){
         StringBuilder handResult = new StringBuilder();
         Player winner = playersList.get(0);
         Collections.sort(currentHand);
@@ -86,7 +83,9 @@ public class GameProtocol implements Serializable {
         for (Player player : this.playersList) {
             if (player.hasCard(winningCard)) {
                 winner = player;
-                playerScores.put(player.getName(), playerScores.get(player.getName()) + 1);
+                if (playerName.equals(winner.getName())) {
+                    playerScores.put(playerName, playerScores.get(playerName) + 1);
+                }
             }
         }
 
@@ -112,17 +111,16 @@ public class GameProtocol implements Serializable {
         }
     }
 
-    public void printResults() {
-        for (Player player: playersList) {   //Fixing the scores from multithreading
-            if (playerScores.get(player.getName()) != 0) {
-                int fixedScore = playerScores.get(player.getName()) / playersList.size();
-                playerScores.put(player.getName(), fixedScore);
-            }
-        }
-        System.out.println("\nScore:");
+    public String getGameResults() {
+        StringBuilder gameResults = new StringBuilder();
+        gameResults.append("Score:\n");
         for (Player player: playersList) {
-            System.out.printf("%s: %d wins%n", player.getName(), playerScores.get(player.getName()) == 0 ? 0 : playerScores.get(player.getName())/playersList.size());
+            gameResults.append(player.getName())
+                    .append(": ")
+                    .append(playerScores.get(player.getName()) == 0 ? 0 : playerScores.get(player.getName()))
+                    .append("\n");
         }
+
         int mostWins = Collections.max(playerScores.values());
         ArrayList<String> winners = new ArrayList<>();
         for (Player player: playersList) {
@@ -130,18 +128,9 @@ public class GameProtocol implements Serializable {
                 winners.add(player.getName());
             }
         }
-        if (winners.size() == 1){
-            System.out.println(winners.get(0) + " wins the game with " + playerScores.get(winners.get(0)) + " wins!");
-        }else{
-            System.out.println("Tie game!\n");
-            if (winners.size() == 2){ //4 way ties can not happen, only 2 or 3 way.
-                System.out.printf("%s and %s both win with %d wins each.", winners.get(0), winners.get(1),
-                        playerScores.get(winners.get(0)));
-            }else{
-                System.out.printf("%s, %s and %s all win with %d wins each.", winners.get(0), winners.get(1),
-                        winners.get(2), playerScores.get(winners.get(0)));
-            }
-        }
+
+        gameResults.append(winners.get(0)).append(" wins the game with ").append(playerScores.get(winners.get(0))).append(" wins!\n");
+        return gameResults.toString();
     }
 
     public boolean allCardsPlayed(){
@@ -162,6 +151,10 @@ public class GameProtocol implements Serializable {
 
     public void clearCurrentHand(){
         currentHand.clear();
+    }
+
+    public void addScore(String playerName){
+
     }
 
 }

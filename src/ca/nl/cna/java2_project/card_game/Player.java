@@ -71,6 +71,10 @@ public class Player implements Serializable {
         return hand.get(0);
     }
 
+    public Card revealCard(int i){
+        return hand.get(i);
+    }
+
     public String getTopCardString(){
         return hand.get(hand.size() - 1).getCardValue() + (hand.get(hand.size() - 1).isWildcard() ? " - Wildcard" : "");
     }
