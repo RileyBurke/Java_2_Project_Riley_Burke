@@ -49,7 +49,7 @@ public class GameServerThread extends Thread {
                     }
                 }
                 while (isCardPlayed && !gameProtocol.allCardsPlayed()){
-                    this.wait();
+
                 }
                 while (isCardPlayed && gameProtocol.allCardsPlayed()) {
                     isCardPlayed = false;
@@ -58,7 +58,7 @@ public class GameServerThread extends Thread {
                         System.out.println("game over");
                         output.writeObject(gameProtocol.getGameResults());
                         break;
-                    }
+                }
 
 
 
@@ -66,8 +66,6 @@ public class GameServerThread extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 

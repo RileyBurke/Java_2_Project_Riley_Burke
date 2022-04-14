@@ -50,7 +50,7 @@ public class GameProtocol implements Serializable {
             if (gameStatus == Status.HAND_IN_PROGRESS) {
                 if (allCardsPlayed()) {
                     break;
-                } else if (!currentHand.contains(playedCard)) {
+                } else if (!currentHand.contains(playedCard) && nextRoundReady(roundNumber)) {
                     if (playerScores.get(playerName) == null) {
                         this.playerScores.put(playerName, 0);
                     }
@@ -152,9 +152,4 @@ public class GameProtocol implements Serializable {
     public void clearCurrentHand(){
         currentHand.clear();
     }
-
-    public void addScore(String playerName){
-
-    }
-
 }

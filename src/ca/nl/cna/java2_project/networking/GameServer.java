@@ -25,7 +25,6 @@ public class GameServer{
         boolean listening = true;
         LinkedList<Player> playersList = new LinkedList<>();
 
-
         //Track the connections
         LinkedList<Socket> clientSocketList = new LinkedList<>();
         LinkedList<ObjectOutputStream> outputStreamList = new LinkedList<>();
