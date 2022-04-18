@@ -5,14 +5,14 @@ import java.util.LinkedList;
 import java.util.StringJoiner;
 
 /**
- * Class representing a ca.nl.cna.java2_project.ca.nl.cna.java2_project.card_game.Player playing a game of One Hundreds.
+ * Class representing a Player playing a game of One Hundreds.
  */
 public class Player implements Serializable {
     private String name;
     private final LinkedList<Card> hand;
 
     /**
-     * Initializes a ca.nl.cna.java2_project.ca.nl.cna.java2_project.card_game.Player with their name and an empty LinkedList for their hand.
+     * Initializes a Player with their name and an empty LinkedList for their hand.
      *
      * @param name The player's name.
      */
@@ -50,7 +50,6 @@ public class Player implements Serializable {
         }
         String hand = cardJoiner.toString();
         System.out.println(hand);
-        //What would be the best way to print the hand?
     }
 
     /**
@@ -78,16 +77,22 @@ public class Player implements Serializable {
     public String getTopCardString(){
         return hand.get(hand.size() - 1).getCardValue() + (hand.get(hand.size() - 1).isWildcard() ? " - Wildcard" : "");
     }
+
     /**
-     * Checks if a player's hand contains a specific ca.nl.cna.java2_project.ca.nl.cna.java2_project.card_game.Card.
+     * Checks if a player's hand contains a specific Card.
      *
-     * @param card ca.nl.cna.java2_project.ca.nl.cna.java2_project.card_game.Card to be checked for in the player's hand.
+     * @param card Card to be checked for in the player's hand.
      * @return Boolean value. True if the hand contains the card, false otherwise.
      */
     public boolean hasCard(Card card){
         return hand.contains(card);
     }
 
+    /**
+     * Checks if the Player's hand has any cards left in it.
+     *
+     * @return Boolean value, true if hand has any cards in it.
+     */
     public boolean hadCardsRemaining(){
         return hand.size() > 0;
     }
@@ -99,21 +104,35 @@ public class Player implements Serializable {
         hand.remove();
     }
 
+    /**
+     * Returns the size of the player's hand.
+     *
+     * @return The size of the player's hand.
+     */
     public int getHandSize(){
         return hand.size();
     }
 
+    /**
+     * Empties the hand of all cards.
+     */
     public void clearHand(){
         hand.clear();
     }
 
+    /**
+     * Adds a specified Card to the Player's hand.
+     *
+     * @param card A Card object to be put into the hand.
+     */
     public void addCard(Card card){
         hand.add(card);
     }
 
     /**
-     * Get the players hand
-     * @return
+     * Get the players hand.
+     *
+     * @return LinkedList of all Cards in the player's hand.
      */
     public LinkedList<Card> getHand() {
         return hand;

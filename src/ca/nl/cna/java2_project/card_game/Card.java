@@ -39,7 +39,7 @@ public class Card implements Comparable<Card>, Serializable {
     }
 
     /**
-     * Allows changes to the wildcard status of a ca.nl.cna.java2_project.ca.nl.cna.java2_project.card_game.Card.
+     * Allows changes to the wildcard status of a Card.
      *
      * @param wildcard The wildcard status of a card.
      */
@@ -50,7 +50,7 @@ public class Card implements Comparable<Card>, Serializable {
     /**
      * Method used to compare cards with one another for sorting and determining a winner.
      *
-     * @param otherCard Another ca.nl.cna.java2_project.ca.nl.cna.java2_project.card_game.Card to be compared against.
+     * @param otherCard Another Card to be compared against.
      * @return An integer value based upon the games winning criteria.
      */
     @Override
@@ -74,6 +74,11 @@ public class Card implements Comparable<Card>, Serializable {
         }
     }
 
+    /**
+     * Allows Card objects to be printed as a String.
+     *
+     * @return A string representation of the Card object.
+     */
     public String toString(){
         return this.cardValue + (this.isWildcard() ? ": Wildcard" : "");
     }

@@ -65,7 +65,7 @@ public class CardDeck {
     /**
      * Grabs a card from the top of the deck and removes it, returning that card.
      *
-     * @return ca.nl.cna.java2_project.ca.nl.cna.java2_project.card_game.Card from the deck.
+     * @return Card from the deck.
      */
     public Card draw(){
         Card card = deck.get(0);

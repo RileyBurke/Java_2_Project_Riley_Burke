@@ -8,15 +8,27 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class GameServerThread extends Thread {
+/**
+ *
+ */
+public class GameServerThread implements Runnable {
     GameProtocol gameProtocol;
     Socket playerSocket;
     Player player;
     ObjectOutputStream output;
     ObjectInputStream input;
 
+    /**
+     *
+     *
+     * @param gameProtocol
+     * @param playerSocket
+     * @param player
+     * @param output
+     * @param input
+     */
     public GameServerThread(GameProtocol gameProtocol, Socket playerSocket, Player player, ObjectOutputStream output, ObjectInputStream input) {
-        super("GameServerThread - " + player.getName());
+//        super("GameServerThread - " + player.getName());
         this.gameProtocol = gameProtocol;
         this.playerSocket = playerSocket;
         this.player = player;
@@ -24,8 +36,11 @@ public class GameServerThread extends Thread {
         this.input = input;
     }
 
-    public void run() {
-        System.out.printf("\nRunning: %s", this.getName());
+    /**
+     *
+     */
+    public synchronized void run() {
+//        System.out.printf("\nRunning: %s", this.getName());
 
         try{
             output.writeObject(player);
@@ -33,46 +48,67 @@ public class GameServerThread extends Thread {
             player.clearHand();
             String handResults = "";
             int roundNumber = 1;
+            boolean gameInProgress = true;
+            boolean waiting = false;
 
-            while (true){
-                while (gameProtocol.getGameStatus() == GameProtocol.Status.NEW_HAND && !isCardPlayed ||
-                        (gameProtocol.getGameStatus() == GameProtocol.Status.HAND_IN_PROGRESS && !isCardPlayed)) {
+            while (gameInProgress){
+//                while (gameProtocol.getGameStatus() == GameProtocol.Status.NEW_HAND && !isCardPlayed ||
+//                        (gameProtocol.getGameStatus() == GameProtocol.Status.HAND_IN_PROGRESS && !isCardPlayed)) {
+//                    Card cardPlayed = (Card) input.readObject();
+//                    while (cardPlayed != null && !isCardPlayed) {
+//                        System.out.println("ROUND " + roundNumber);
+//                        player.addCard(cardPlayed);
+//                        gameProtocol.playHand(cardPlayed, player.getName(), roundNumber);
+//                        handResults = gameProtocol.resolveHand(roundNumber, player.getName());
+//                        isCardPlayed = true;
+//                        output.writeObject(handResults);
+//                        roundNumber++;
+//                    }
+//                }
+//                while (isCardPlayed && !gameProtocol.allCardsPlayed()){
+//
+//                }
+//                while (isCardPlayed && gameProtocol.allCardsPlayed()) {
+//                    isCardPlayed = false;
+//                }
+                if (!isCardPlayed) {
                     Card cardPlayed = (Card) input.readObject();
                     while (cardPlayed != null && !isCardPlayed) {
                         System.out.println("ROUND " + roundNumber);
                         player.addCard(cardPlayed);
                         gameProtocol.playHand(cardPlayed, player.getName(), roundNumber);
-                        handResults = gameProtocol.resolveHand(roundNumber, player.getName());
                         isCardPlayed = true;
-                        output.writeObject(handResults);
-                        roundNumber++;
                     }
                 }
-                while (isCardPlayed && !gameProtocol.allCardsPlayed()){
-
-                }
-                while (isCardPlayed && gameProtocol.allCardsPlayed()) {
+                if (gameProtocol.allCardsPlayed()){
+                    handResults = gameProtocol.resolveHand(roundNumber, player.getName());
+                    output.writeObject(handResults);
+                    output.flush();
+                    roundNumber++;
                     isCardPlayed = false;
+                    gameProtocol.setPlayerReady();
+                    waiting = true;
                 }
-                if(gameProtocol.isGameOver()){
-                        System.out.println("game over");
-                        output.writeObject(gameProtocol.getGameResults());
-                        break;
+                while (waiting) {
+                    if (gameProtocol.allPlayersReady()) {
+                        gameProtocol.clearCurrentHand();
+                        gameProtocol.resetPlayersReady();
+                    }
+                    if (gameProtocol.currentHandEmpty()){
+                        waiting = false;
+                    }
                 }
-
-
-
+                if (gameProtocol.isGameOver()) {
+                    System.out.println("game over");
+                    output.writeObject(gameProtocol.getGameResults());
+                    boolean rematch = (boolean) input.readObject();
+                    gameProtocol.attemptRematch(rematch);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-
-
-        //Continue until the game is completed
-
-        //TODO Consider sleeping the thread in the game loop for a second to make the game happen in real time
-        //But depending on how you do this you may want to sleep somewhere else
     }
 }

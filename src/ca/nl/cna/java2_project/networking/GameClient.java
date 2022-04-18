@@ -62,14 +62,15 @@ public class GameClient{
                     System.out.println(finalResults);
                     System.out.println("Play again (y/n)?: ");
                     playAgain = br.readLine();
+                    if (playAgain.equalsIgnoreCase("y")){
+                        output.writeObject(true);
+                    }else{
+                        output.writeObject(false);
+                    }
                 }
             }while(playAgain.equalsIgnoreCase("y"));
 
-            //Wait on some game loop and play your cards as needed
-            //Playing a card is sending a card from the Player object to the server via an ObjectOutputStream
-            //End when all the cards are played (to be determined by the game protocol)
-
-        }//game is over
+        }
         catch (UnknownHostException e) {
             System.err.println("Don't know about host " + hostName);
             System.exit(1);
